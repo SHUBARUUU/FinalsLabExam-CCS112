@@ -2,24 +2,25 @@
 
 namespace Database\Seeders;
 
+use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $demo = User::firstOrCreate(
+            ['email' => 'demo@helpdesk.test'],
+            [
+                'name' => 'Demo User',
+                'password' => Hash::make('Demo@12345'),
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        if ($demo->tickets()->count() === 0) {
+            Ticket::factory()->count(15)->create(['user_id' => $demo->id]);
+        }
     }
 }
